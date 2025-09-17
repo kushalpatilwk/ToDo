@@ -1,9 +1,12 @@
-import { useContext } from "react";
-import { TaskContext } from "../context/TaskContext";
+// import { useContext } from "react";
+// import { TaskContext } from "../context/TaskContext";
+import useTaskStore from "../context/useTaskStore";
 //import './App.css';
 
 const TaskList = () => {
-    const { tasks, toggleTaskChecked } = useContext(TaskContext);
+    //const { tasks, toggleTaskChecked } = useContext(TaskContext);
+    const tasks = useTaskStore(state=> state.tasks );
+    const toggleTaskChecked = useTaskStore(state=> state.toggleTaskChecked );
     const sortedTasks = tasks.slice().sort((a, b) => a.checked - b.checked);
 
     return (
