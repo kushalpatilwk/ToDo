@@ -58,9 +58,11 @@ const useTaskStore = create((set) => ({
     })),
 
   taskDelete: (id) =>
-    set((state) => ({
+   {if(window.confirm("Are you sure ?"))
+       set((state) => ({ 
+     
       tasks: state.tasks.filter((t) => t.id !== id),
-    })),
+    }))},
 
   setTasks: (newTasks) => set({ tasks: newTasks }),
 }));
