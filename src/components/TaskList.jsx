@@ -1,32 +1,59 @@
-// import { useContext } from "react";
-// import { TaskContext } from "../context/TaskContext";
+import React from "react";
 import useTaskStore from "../context/useTaskStore";
-//import './App.css';
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  arrayMove,
+} from "@dnd-kit/sortable";
+import TaskItem from "./TaskItem";
 
 const TaskList = () => {
-    //const { tasks, toggleTaskChecked } = useContext(TaskContext);
-    const tasks = useTaskStore(state=> state.tasks );
-    const toggleTaskChecked = useTaskStore(state=> state.toggleTaskChecked );
-    const sortedTasks = tasks.slice().sort((a, b) => a.checked - b.checked);
+  const tasks = useTaskStore(state => state.tasks);
+  const setTasks = useTaskStore(state => state.setTasks);
 
-    return (
-        <div className="task-list">{
-            sortedTasks.map(task => (
-                <div key={task.id} className="task-item">
-                    <ul>
-                        <li className={task.checked ? "checked" : ""}>
-                            <input
-                                type="checkbox"
-                                checked={task.checked}
-                                onChange={e => toggleTaskChecked(task.id, e.target.checked)}
-                            />
-                            {task.text}
-                        </li>
-                    </ul>
-                </div>
-            ))}
-        </div>
-    );
+  const sortedTasks = tasks
+    .slice()
+    .sort((a, b) => a.checked - b.checked || a.order - b.order);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
+  );
+
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = sortedTasks.findIndex(task => task.id === active.id);
+    const newIndex = sortedTasks.findIndex(task => task.id === over.id);
+
+    const reordered = arrayMove(sortedTasks, oldIndex, newIndex);
+
+    const updatedTasks = reordered.map((task, index) => ({
+      ...task,
+      order: index,
+    }));
+
+    setTasks(updatedTasks);
+  };
+
+  return (
+    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      <SortableContext items={sortedTasks.map(task => task.id)} strategy={verticalListSortingStrategy}>
+       
+          {sortedTasks.map(task => (
+            <TaskItem key={task.id} task={task} />
+          ))}
+        
+      </SortableContext>
+    </DndContext>
+  );
 };
 
 export default TaskList;
