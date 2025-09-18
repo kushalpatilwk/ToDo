@@ -1,6 +1,7 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
-const useTaskStore = create((set) => ({
+const useTaskStore = create(persist((set) => ({
   task: { text: "", checked: false },
   tasks: [],
 
@@ -65,6 +66,10 @@ const useTaskStore = create((set) => ({
     }))},
 
   setTasks: (newTasks) => set({ tasks: newTasks }),
-}));
+
+  
+})
+, {  name: 'task-storage',}
+));
 
 export default useTaskStore;
