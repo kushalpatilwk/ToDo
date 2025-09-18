@@ -12,7 +12,7 @@ const useTaskStore = create((set) => ({
         ...state.task,
         id: Date.now(),
         checked: false,
-        order: state.tasks.length,   // ✅ always set order
+        order: state.tasks.length,  
       };
 
       const unchecked = [newTask, ...state.tasks.filter((t) => !t.checked)];
