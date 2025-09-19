@@ -34,7 +34,7 @@ const TaskItem = ({ task }) => {
           checked={task.checked}
           onChange={e => toggleTaskChecked(task.id, e.target.checked)}
         />
-        {task.text}
+       <span>{task.text}</span>
       </div>
 
       <div className="task-form">
